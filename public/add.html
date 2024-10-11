@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление товаров</title>
+</head>
+<body>
+<a href="index.html?id=1">Заказы клиентов</a>
+<p>
+    <b>Добавьте новые товары в формате: <br></b>
+    Наименование продукта-цена; <br>
+    Наименование продукта-цена;
+</p>
+<textarea name="product" id="product" cols="30" rows="10">капуста-500;</textarea>
+<br>
+<button  id="addButton">Добавить</button>
+<div id="result"></div>
+
+<script>
+    document.getElementById('addButton').addEventListener('click', async function() {
+        const input = document.getElementById('product').value.trim();
+
+        // Разбиваем введенные данные на массив объектов
+        const products = input.split(';').map(item => {
+            const [title, price] = item.split('-').map(str => str.trim());
+            if (title && price) {
+                return { title, price: parseFloat(price) };
+            }
+            return null; // Игнорируем некорректные записи
+        }).filter(item => item !== null);
+
+        if (products.length === 0) {
+            document.getElementById('result').innerText = 'Пожалуйста, добавьте корректные товары.';
+            return;
+        }
+
+        try {
+            const response = await fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(products),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById('result').innerText = `Успешно добавлено товаров: ${result.addedCount}`;
+            } else {
+                document.getElementById('result').innerText = `Ошибка: ${result.error}`;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('result').innerText = 'Произошла ошибка при добавлении товаров.';
+        }
+    });
+</script>
+</body>
+</html>
