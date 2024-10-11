@@ -1,0 +1,19 @@
+Для User
+ALTER TABLE test_db.`user` MODIFY COLUMN first_name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL;
+ALTER TABLE test_db.`user` MODIFY COLUMN second_name varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL;
+Для целостности данных и исключения пустых записей
+
+CREATE INDEX user_birthday_IDX USING BTREE ON test_db.`user` (birthday);
+Для ускорения поиска
+ALTER TABLE test_db.`user` MODIFY COLUMN created_at datetime DEFAULT NOW() NOT NULL;
+Для более быстрого создания новых записей
+
+Для Product
+ALTER TABLE test_db.products MODIFY COLUMN price decimal(10,2) NOT NULL;
+ALTER TABLE test_db.products MODIFY COLUMN title varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL;
+Для целостности данных и исключения пустых записей
+
+Для user_order
+ALTER TABLE test_db.user_order ADD CONSTRAINT user_order_products_FK FOREIGN KEY (product_id) REFERENCES test_db.products(id);
+ALTER TABLE test_db.user_order ADD CONSTRAINT user_order_user_FK FOREIGN KEY (user_id) REFERENCES test_db.`user`(id);
+Для целостности данных

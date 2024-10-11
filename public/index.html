@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказы клиентов</title>
+    <style>
+body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+    .order { margin-bottom: 20px; }
+        .product { padding-left: 20px; }
+    </style>
+</head>
+<body>
+<a href="add.html">Добавление товара</a>
+    <div id="client-info"></div>
+
+    <script>
+        // Функция для получения ID клиента из URL параметров
+        function getClientIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Функция для получения данных о клиенте и отображения их на странице
+        async function fetchClientData() {
+            const clientId = getClientIdFromUrl();
+
+            if (!clientId) {
+                document.getElementById('client-info').innerText = 'Укажите ID клиентов';
+                return;
+            }
+
+            try {
+                const response = await fetch(`server.php?id=${clientId}`);
+                    console.log(response)
+                    const data = await response.json();
+
+                    if (data.error) {
+                        document.getElementById('client-info').innerText = data.error;
+                        return;
+                    }
+
+                    // Формирование HTML-контента с данными о клиенте
+                    let html = `<h2>Клиент: ${data.full_name}</h2>`;
+                    data.orders.forEach(order => {
+                        html += `<div class="order">
+                                <h3>Продукт: ${order.product_title} </h3>
+                                <div class="product">
+                                    Цена: ${Math.floor(order.product_price)} ₸<br>
+                                    Дата заказа: ${order.order_date}
+                                </div>
+                            </div>`;
+                    });
+
+                    document.getElementById('client-info').innerHTML = html;
+                } catch (error) {
+                    // console.log(error)
+                    document.getElementById('client-info').innerText = 'Ошибка при получении данных клиента.';
+            }
+        }
+
+        // Вызов функции после загрузки страницы
+        window.onload = fetchClientData;
+    </script>
+</body>
+</html>
