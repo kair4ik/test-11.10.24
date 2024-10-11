@@ -13,7 +13,7 @@ class RequestHandler {
         header('Content-Type: application/json');
         if (isset($_GET['id'])) {
             $client_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-            if ($client_id === false) {
+            if ($client_id === false  || $client_id <= 0) {
                 Database::getInstance()->errorResponse('Неверный ID клиента');
             }
 
